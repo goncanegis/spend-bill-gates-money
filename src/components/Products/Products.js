@@ -6,11 +6,13 @@ import Product from './Product/Product';
 
 const Products = ({ products }) => {
   return (
-    <div className={styles.products}>
-      {products.map((product) => (
-        <Product key={product.id} productData={product} />
-      ))}
-    </div>
+    <>
+      <div className={styles.products}>
+        {products.map((product) => (
+          <Product key={product.id} productData={product} />
+        ))}
+      </div>
+    </>
   );
 };
 

@@ -1,8 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import styles from './Cart.module.css';
 
-import CartItem from './CartItem/CartItem';
-
 import { connect } from 'react-redux';
 
 const Cart = ({ cart }) => {
@@ -21,22 +19,36 @@ const Cart = ({ cart }) => {
     setTotalPrice(price);
   }, [cart, totalPrice, totalItems, setTotalPrice, setTotalItems]);
 
+  const formatToCurrency = (number) => {
+    return new Intl.NumberFormat('en-US', {
+      style: 'currency',
+      currency: 'USD',
+    }).format(number);
+  };
+
   return (
     <div className={styles.cart}>
-      <div className={styles.cart__items}>
-        {cart.map((item) => (
-          <CartItem key={item.id} itemData={item} />
-        ))}
-      </div>
-      <div className={styles.cart__summary}>
-        <h4 className={styles.summary__title}>Cart Summary</h4>
-        <div className={styles.summary__price}>
-          <span>TOTAL: ({totalItems} items)</span>
-          <span>$ {totalPrice}</span>
-        </div>
-        <button className={styles.summary__checkoutBtn}>
-          Proceed To Checkout
-        </button>
+      <h4 className={styles.summary__title}>Your Receipt</h4>
+      {cart.map((item) => {
+        return (
+          <div key={item.id} className={styles.cart__items}>
+            <span className={styles.cart__item__title}>{item.title}</span>
+            <span className={styles.cart__item__amount}>x{item.qty}</span>
+            <span className={styles.cart__item__price}>
+              $
+              {new Intl.NumberFormat('en-GB', {
+                notation: 'compact',
+                compactDisplay: 'short',
+              }).format(item.qty * item.price)}
+            </span>
+          </div>
+        );
+      })}
+      <div className={styles.cart__items__total}>
+        <span className={styles.cart__item__title__total}>TOTAL:</span>
+        <span className={styles.cart__item__price}>
+          {formatToCurrency(totalPrice)}
+        </span>
       </div>
     </div>
   );

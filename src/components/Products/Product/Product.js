@@ -1,38 +1,62 @@
-import React from 'react';
-import { Link } from 'react-router-dom';
+import React, { useState } from 'react';
 import styles from './Product.module.css';
 import { connect } from 'react-redux';
 import {
   addToCart,
-  loadCurrentItem,
+  removeFromCart,
 } from '../../../redux/Shopping/shopping-actions';
 
-const Product = ({ productData, addToCart, loadCurrentItem }) => {
-  const { title, image, description, price } = productData;
+const Product = ({ cart, productData, addToCart, removeFromCart }) => {
+  const { title, image, price, id } = productData;
+  const [itemAmount, setItemAmount] = useState(0);
+
+  const handleAddButtonClick = () => {
+    addToCart(id);
+    setItemAmount((prevState) => prevState + 1);
+  };
+
+  const handleSellButtonClick = () => {
+    if (itemAmount <= 0) {
+      return;
+    }
+    removeFromCart(id);
+    setItemAmount((prevState) => prevState - 1);
+  };
+
+  const formatToCurrency = (number) => {
+    return new Intl.NumberFormat('en-US', {
+      style: 'currency',
+      currency: 'USD',
+    }).format(number);
+  };
+
   return (
     <div className={styles.product}>
-      <img className={styles.product__image} src={image} alt={title} />
-
-      <div className={styles.product__details}>
-        <p className={styles.details__title}>{title}</p>
-        <p className={styles.details__desc}>{description}</p>
-        <p className={styles.details__price}>$ {price}</p>
-      </div>
+      <img
+        className={styles.product__image}
+        src={require(`../../../assets/images/${image}.jpeg`)}
+        alt={title}
+      />
+      <p className={styles.details__title}>{title}</p>
+      <p className={styles.details__price}>{formatToCurrency(price)}</p>
 
       <div className={styles.product__buttons}>
-        <Link to={`/product/${productData.id}`}>
-          <button
-            onClick={() => loadCurrentItem(productData)}
-            className={`${styles.buttons__btn} ${styles.buttons__view}`}
-          >
-            View Item
-          </button>
-        </Link>
         <button
-          onClick={() => addToCart(productData.id)}
-          className={`${styles.buttons__btn} ${styles.buttons__add}`}
+          onClick={() => handleSellButtonClick(id)}
+          className={`${styles.sell__btn} ${styles.btn} ${
+            itemAmount <= 0 ? styles.disabled : ''
+          }`}
         >
-          Add To Cart
+          Sell
+        </button>
+        <div className={styles.amountInput}>{itemAmount}</div>
+        <button
+          onClick={() => {
+            handleAddButtonClick();
+          }}
+          className={`${styles.buy__btn} ${styles.btn}`}
+        >
+          Buy
         </button>
       </div>
     </div>
@@ -42,8 +66,14 @@ const Product = ({ productData, addToCart, loadCurrentItem }) => {
 const mapDispatchToProps = (dispatch) => {
   return {
     addToCart: (id) => dispatch(addToCart(id)),
-    loadCurrentItem: (item) => dispatch(loadCurrentItem(item)),
+    removeFromCart: (id) => dispatch(removeFromCart(id)),
   };
 };
 
-export default connect(null, mapDispatchToProps)(Product);
+const mapStateToProps = (state) => {
+  return {
+    cart: state.shop.cart,
+  };
+};
+
+export default connect(mapStateToProps, mapDispatchToProps)(Product);

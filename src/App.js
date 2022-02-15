@@ -1,32 +1,18 @@
-import { Routes, Route, Link, useNavigate } from 'react-router-dom';
 import './App.css';
-import Navbar from './components/Navbar/Navbar';
+import Header from './components/Header/Header';
 import Products from './components/Products/Products';
 import Cart from './components/Cart/Cart';
-import SingleItem from './components/SingleItem/SingleItem';
-import { connect } from 'react-redux';
+import Footer from './components/Footer/Footer';
 
-function App({ currentItem }) {
-  const navigate = useNavigate();
+function App() {
   return (
     <div className="App">
-      <Navbar />
-      <Routes>
-        <Route path="/" element={<Products />} />
-        <Route path="/cart" element={<Cart />} />
-        <Route
-          path="/product/:id"
-          element={currentItem ? <SingleItem /> : <Products />}
-        />
-      </Routes>
+      <Header />
+      <Products />
+      <Cart />
+      <Footer />
     </div>
   );
 }
 
-const mapStateToProps = (state) => {
-  return {
-    currentItem: state.shop.currentItem,
-  };
-};
-
-export default connect(mapStateToProps)(App);
+export default App;
